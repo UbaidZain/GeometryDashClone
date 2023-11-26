@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.surface {
+  position: fixed;
+  top: 65%;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: darkgray;
+}
+.ball {
+  background-color: red;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  position: fixed;
+  left: 30vw;
+  top: 20vh;
+}
