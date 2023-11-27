@@ -25,10 +25,22 @@ body {
   left: 30vw;
   top: 20vh;
 }
+.message {
+  position: fixed;
+  top: 30vh;
+  left: 30vw;
+  font-size: 3rem;
+}
 .obstacle {
   position: absolute;
   left: 100vw;
   height: 70vh;
   width: 40px;
   background-color: black;
+}
+.score-con {
+  position: fixed;
+  font-size: 2rem;
+  left: 0;
+  top: 0;
 }
