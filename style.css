@@ -44,3 +44,9 @@ body {
   left: 0;
   top: 0;
 }
+.high-score-con {
+  position: fixed;
+  font-size: 2rem;
+  right: 0;
+  top: 0;
+}

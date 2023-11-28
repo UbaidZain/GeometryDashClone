@@ -8,18 +8,30 @@ let moveSpeed = 3;
 let message = document.getElementsByClassName("message")[0];
 let scoreTitle = document.getElementsByClassName("score-title")[0];
 let scoreValue = document.getElementsByClassName("score-value")[0];
-
+let highScoreValue = document.getElementsByClassName("high-score-value")[0];
+console.log(highScoreValue);
+let moveSpeedIcrease = 0;
 let ball_dy = 0;
+let is_running = false;
 
+highScoreValue.innerHTML = JSON.parse(localStorage.getItem("ballHighScore"));
 document.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    gameState = "play";
-    message.innerHTML = "";
-    scoreValue.innerHTML = 0;
+    if (gameState !== "play") {
+      let obstacles = Array.from(document.getElementsByClassName("obstacle"));
+      obstacles.forEach((obstacle) => {
+        obstacle.remove();
+      });
+      gameState = "play";
+      message.innerHTML = "";
+      ball.style.top = "20vh";
+      is_running = true;
+      scoreValue.innerHTML = 0;
 
-    addGravity();
-    addObstacle();
-    play();
+      addGravity();
+      addObstacle();
+      play();
+    }
   }
 });
 
@@ -37,7 +49,7 @@ function play() {
         ballProps.top < obstacleProps.top + obstacleProps.height &&
         ballProps.top + ballProps.height > obstacleProps.top
       ) {
-        gameState = "start";
+        endGame();
       }
       if (
         ballProps.left < obstacleProps.left + obstacleProps.width &&
@@ -46,11 +58,18 @@ function play() {
       ) {
         obstacle.increase_value = 0;
         scoreValue.innerHTML = parseInt(scoreValue.innerHTML) + 1;
+        moveSpeedIcrease++;
       }
       obstacle.style.left = obstacleProps.left - moveSpeed + "px";
     });
+    if (moveSpeedIcrease > 5) {
+      moveSpeedIcrease = 0;
+      moveSpeed += 0.2;
+    }
   }
-  requestAnimationFrame(play);
+  if (is_running === true) {
+    requestAnimationFrame(play);
+  }
 }
 function addGravity() {
   if (gameState === "play") {
@@ -62,27 +81,51 @@ function addGravity() {
     });
     if (ballProps.bottom < surfaceProps.top) {
       ball_dy += gravity;
+
       ball.style.top = ballProps.top + ball_dy + "px";
     }
     ballProps = ball.getBoundingClientRect();
   }
-  requestAnimationFrame(addGravity);
+  if (is_running === true) {
+    requestAnimationFrame(addGravity);
+  }
 }
+let minusSeparation = moveSpeed / 3;
 let separation = 0;
 function addObstacle() {
-  if (gameState === "play") {
-    if (separation > 115) {
-      let obstacleposi = Math.floor(Math.random() * 12) + 2;
-      console.log(obstacleposi);
-      separation = 0;
-      let obstacle = document.createElement("div");
-      obstacle.classList.add("obstacle");
-      obstacle.style.top = 65 - obstacleposi + "vh";
-      obstacle.increase_value = 1;
-      document.body.appendChild(obstacle);
-    }
-    separation++;
+  if (separation > 115 / minusSeparation) {
+    let obstacleposi = Math.floor(Math.random() * 10) + 2;
+    separation = 0;
+    let obstacle = document.createElement("div");
+    obstacle.classList.add("obstacle");
+    obstacle.style.top = 65 - obstacleposi + "vh";
+    obstacle.increase_value = 1;
+    document.body.appendChild(obstacle);
   }
+  separation++;
 
-  requestAnimationFrame(addObstacle);
+  if (is_running == true) {
+    requestAnimationFrame(addObstacle);
+  }
+}
+function endGame() {
+  highScoreSave();
+  message.innerHTML = "Press enter to restart";
+  moveSpeed = 3;
+  gameState = "end";
+  is_running = false;
+}
+function highScoreSave() {
+  let score = parseInt(scoreValue.innerHTML);
+  console.log(score);
+  let highScore;
+  if (localStorage.getItem("ballHighScore") === null) {
+    highScore = [0];
+  } else {
+    highScore = JSON.parse(localStorage.getItem("ballHighScore"));
+  }
+  if (highScore[0] < score) {
+    highScore[0] = score;
+  }
+  localStorage.setItem("ballHighScore", JSON.stringify(highScore));
 }
